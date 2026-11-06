@@ -861,7 +861,7 @@
             </ul>
             <div class="card__links">
               <a href="Appointments.html" target="_blank" rel="noopener">Live ↗</a>
-              <a href="#" target="_blank" rel="noopener">Code ↗</a>
+              <a href="Appointments.html" target="_blank" rel="noopener">Code ↗</a>
             </div>
           </article>
 
@@ -954,6 +954,7 @@
 
         <div id="flashBox"></div>
 
+        <!-- FORMSPREE ACTION ADDED HERE -->
         <form class="form" id="contactForm"
               action="https://formspree.io/f/myeyergz" method="POST">
           <div class="form__row">
@@ -1150,6 +1151,7 @@
         flashBox.innerHTML = "";
 
         try {
+          // FORMSPREE FETCH ADDED HERE
           const res = await fetch("https://formspree.io/f/myeyergz", {
             method: "POST",
             body: data,
