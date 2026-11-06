@@ -709,7 +709,8 @@
 
           <div id="flashBox" aria-live="polite"></div>
 
-          <form class="form" id="bookingForm" novalidate>
+          <!-- ADDED ACTION & METHOD FOR FORMSPREE FALLBACK -->
+          <form class="form" id="bookingForm" action="https://formspree.io/f/myeyergz" method="POST" novalidate>
             <div class="form__row">
               <div class="field">
                 <label for="service">Service *</label>
@@ -910,6 +911,7 @@
       const timeSelect = document.getElementById("time");
 
       const STORE_KEY = "ss-bookings";
+      const FORMSPREE_URL = "https://formspree.io/f/myeyergz";
 
       /* ======================================================
          PERSISTENCE (localStorage stands in for the SQL table)
@@ -1159,9 +1161,9 @@
       }
 
       /* ======================================================
-         SUBMIT
+         SUBMIT (WITH FORMSPREE INTEGRATION)
          ====================================================== */
-      form.addEventListener("submit", function (e) {
+      form.addEventListener("submit", async function (e) {
         e.preventDefault();
         clearErrors();
 
@@ -1189,34 +1191,67 @@
           return;
         }
 
-        const record = {
-          id: makeId(),
-          service: data.service,
-          date: data.date,
-          time: data.time,
-          name: data.name.trim(),
-          email: data.email.trim(),
-          phone: data.phone.trim(),
-          notes: data.notes,
-          created: new Date().toISOString()
-        };
+        // --- FORMSPREE SUBMISSION ---
+        submitBtn.disabled = true;
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = "Sending...";
 
-        existing.push(record);
-        saveBookings(existing);
-        render();
+        try {
+          const formData = new FormData(form);
+          const response = await fetch(FORMSPREE_URL, {
+            method: "POST",
+            body: formData,
+            headers: {
+              "Accept": "application/json"
+            }
+          });
 
-        form.reset();
-        dateInput.min = todayISO();
-        clearErrors();
+          if (response.ok) {
+            // Success
+            const record = {
+              id: makeId(),
+              service: data.service,
+              date: data.date,
+              time: data.time,
+              name: data.name.trim(),
+              email: data.email.trim(),
+              phone: data.phone.trim(),
+              notes: data.notes,
+              created: new Date().toISOString()
+            };
 
-        flash(
-          "Thanks, " + record.name + "! Your " + record.service +
-          " is booked for " + prettyDate(record.date) + " at " + prettyTime(record.time) + ".",
-          "success"
-        );
+            existing.push(record);
+            saveBookings(existing);
+            render();
 
-        document.getElementById("appointments")
-          .scrollIntoView({ behavior: "smooth", block: "start" });
+            form.reset();
+            dateInput.min = todayISO();
+            clearErrors();
+
+            flash(
+              "Thanks, " + record.name + "! Your " + record.service +
+              " is booked for " + prettyDate(record.date) + " at " + prettyTime(record.time) + ".",
+              "success"
+            );
+
+            document.getElementById("appointments")
+              .scrollIntoView({ behavior: "smooth", block: "start" });
+          } else {
+            // Formspree returned an error
+            const json = await response.json();
+            let msg = "Something went wrong with the submission.";
+            if (json.errors && json.errors.length > 0) {
+              msg = json.errors.map(err => err.message).join(", ");
+            }
+            flash("Failed to submit: " + msg + " Please try again.", "error");
+          }
+        } catch (error) {
+          // Network error
+          flash("Network error. Please check your connection and try again.", "error");
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+        }
       });
 
       /* Live-clear an error once the visitor edits the field */
