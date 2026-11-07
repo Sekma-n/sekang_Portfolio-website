@@ -169,21 +169,3 @@ You are free to use the structure and design system as inspiration, but please r
   <sub>Built with plain HTML, CSS &amp; JavaScript · © 2026 Sekang Segotso</sub>
 </p>
 ```
-
-## Why this README works
-
-1. **Instant clarity** — the first screen states who you are, what the project is, and links to the live demo.
-2. **Corporate tone** — tables, a consistent section hierarchy, and professional badges give it the feel of a maintained product repository rather than a class assignment.
-3. **Scannable** — recruiters and collaborators can find Features, Tech Stack, and Getting Started in seconds.
-4. **Accurate to the codebase** — the structure, sections (01–05), certifications, and contact details are pulled directly from your live site and the `Home.html` / `About.html` you shared.
-5. **Actionable** — clone commands, customisation tokens, and a browser-support table help anyone who wants to run, fork, or review the project.
-
-## Quick setup steps
-
-1. On GitHub, navigate to your repository: `https://github.com/sekma-n/sekang_Portfolio-website`
-2. Click **Add file → Create new file**
-3. Name it **`README.md`**
-4. Paste the Markdown above
-5. Scroll down and click **Commit new file**
-
-The README will automatically render on the repository homepage.
