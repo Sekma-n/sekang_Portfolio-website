@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Online Booking System — Sekang Segotso</title>
+  <meta name="description" content="Online Booking System — a Java-based web application for scheduling services, with form validation, persistence and a clean, responsive interface." />
+  <link rel="icon" href="SSdesigns.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <script>
+    /* Apply saved theme before first paint to avoid a flash */
+    (function () {
+      try {
+        var t = localStorage.getItem("theme");
+        if (t) document.documentElement.setAttribute("data-theme", t);
+      } catch (e) {}
+    })();
+  </script>
+
+  <style>
+    /* ==========================================================
+       THEME VARIABLES
+       ========================================================== */
+    :root {
+      --bg: #0b0f19;
+      --bg-alt: #0e1424;
+      --surface: #121a2b;
+      --text: #e7ebf3;
+      --muted: #93a1b8;
+      --accent: #6d7cff;
+      --accent-2: #22d3ee;
+      --danger: #ef4444;
+      --success: #10b981;
+      --border: rgba(255, 255, 255, 0.08);
+      --shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.7);
+      --radius: 16px;
+      --max: 1080px;
+    }
+
+    [data-theme="light"] {
+      --bg: #f7f8fc;
+      --bg-alt: #eef1f8;
+      --surface: #ffffff;
+      --text: #131a2b;
+      --muted: #5b6880;
+      --accent: #4f5bff;
+      --accent-2: #0891b2;
+      --border: rgba(15, 23, 42, 0.1);
+      --shadow: 0 20px 40px -24px rgba(15, 23, 42, 0.25);
+    }
+
+    /* ==========================================================
+       BASE / RESET
+       ========================================================== */
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 90px;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    ul, ol { list-style: none; margin: 0; padding: 0; }
+
+    .container {
+      width: 100%;
+      max-width: var(--max);
+      margin-inline: auto;
+      padding-inline: 24px;
+    }
+
+    .muted { color: var(--muted); }
+    .center { text-align: center; }
+
+    /* ==========================================================
+       NAV
+       ========================================================== */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      background: rgba(11, 15, 25, 0.78);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.25s ease, background 0.3s ease;
+    }
+
+    [data-theme="light"] .nav { background: rgba(247, 248, 252, 0.8); }
+
+    .nav--scrolled { border-bottom-color: var(--border); }
+
+    .nav__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 68px;
+      gap: 24px;
+    }
+
+    .nav__brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    /* UPDATED LOGO STYLES */
+    .nav__logo {
+      width: auto;
+      height: 36px;
+      max-width: 120px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .nav__links { display: flex; gap: 28px; }
+
+    .nav__links a {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--muted);
+      transition: color 0.2s ease;
+      position: relative;
+    }
+    .nav__links a:hover { color: var(--text); }
+
+    .nav__links a::after {
+      content: "";
+      position: absolute;
+      left: 0; bottom: -6px;
+      width: 0; height: 2px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width 0.25s ease;
+    }
+    .nav__links a:hover::after { width: 100%; }
+
+    .nav__actions { display: flex; align-items: center; gap: 8px; }
+
+    .icon-btn {
+      display: grid;
+      place-items: center;
+      width: 38px; height: 38px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: transparent;
+      color: var(--text);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+    .icon-btn:hover { background: var(--surface); transform: translateY(-1px); }
+    .nav__burger { display: none; }
+
+    /* ==========================================================
+       HERO
+       ========================================================== */
+    .hero {
+      position: relative;
+      padding: 84px 0 56px;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .hero__glow {
+      position: absolute;
+      top: -260px; left: 50%;
+      transform: translateX(-50%);
+      width: 780px; height: 780px;
+      background: radial-gradient(circle, rgba(109, 124, 255, 0.30) 0%, transparent 62%);
+      filter: blur(30px);
+      pointer-events: none;
+    }
+
+    .hero__inner { position: relative; max-width: 720px; margin-inline: auto; }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent-2);
+    }
+
+    .hero__title {
+      margin: 0 0 16px;
+      font-size: clamp(2rem, 5.5vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      background: linear-gradient(120deg, var(--text) 30%, var(--accent) 70%, var(--accent-2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero__sub {
+      margin: 0 auto 24px;
+      max-width: 58ch;
+      font-size: 1.02rem;
+      color: var(--muted);
+    }
+
+    .hero .chips { justify-content: center; }
+
+    /* ==========================================================
+       BUTTONS
+       ========================================================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 22px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      font: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn--sm { padding: 9px 16px; font-size: 0.85rem; }
+
+    .btn--primary {
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 12px 26px -12px var(--accent);
+    }
+    .btn--primary:hover { box-shadow: 0 18px 34px -14px var(--accent); }
+    .btn--primary[disabled] {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn--ghost {
+      border-color: var(--border);
+      background: var(--surface);
+      color: var(--text);
+    }
+    .btn--ghost:hover { border-color: var(--accent); }
+
+    .btn--danger {
+      border-color: rgba(239, 68, 68, 0.45);
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+    }
+    .btn--danger:hover { background: rgba(239, 68, 68, 0.18); }
+
+    /* ==========================================================
+       CHIPS
+       ========================================================== */
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .chip {
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--text);
+      background: rgba(109, 124, 255, 0.14);
+      border: 1px solid rgba(109, 124, 255, 0.3);
+    }
+
+    /* ==========================================================
+       SECTIONS / LAYOUT
+       ========================================================== */
+    .section { padding: 64px 0; }
+    .section--alt { background: var(--bg-alt); }
+
+    .section__title {
+      margin: 0 0 8px;
+      font-size: clamp(1.4rem, 3.4vw, 1.8rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .section__note { margin: 0 0 28px; font-size: 0.94rem; color: var(--muted); }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.55fr 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      padding: 28px;
+    }
+
+    /* ==========================================================
+       FORM
+       ========================================================== */
+    .form { display: grid; gap: 16px; }
+
+    .form__row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .field { display: grid; gap: 6px; }
+
+    .field > label {
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      padding: 12px 14px;
+      font: inherit;
+      font-size: 0.94rem;
+      color: var(--text);
+      background-color: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .field textarea { resize: vertical; min-height: 96px; }
+
+    .field select {
+      appearance: none;
+      -webkit-appearance: none;
+      padding-right: 40px;
+      background-image:
+        linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+        linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+      background-position: calc(100% - 19px) 50%, calc(100% - 14px) 50%;
+      background-size: 5px 5px, 5px 5px;
+      background-repeat: no-repeat;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(109, 124, 255, 0.22);
+    }
+
+    .field input[aria-invalid="true"],
+    .field select[aria-invalid="true"],
+    .field textarea[aria-invalid="true"] {
+      border-color: var(--danger);
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.16);
+    }
+
+    .field__error {
+      margin: 0;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--danger);
+    }
+    .field__error:empty { display: none; }
+
+    .form__actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .form__hint { margin: 0; font-size: 0.8rem; color: var(--muted); }
+
+    /* ==========================================================
+       FLASH
+       ========================================================== */
+    .flash {
+      margin-bottom: 20px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .flash--success {
+      background: rgba(16, 185, 129, 0.14);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      color: var(--success);
+    }
+
+    .flash--error {
+      background: rgba(239, 68, 68, 0.14);
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      color: var(--danger);
+    }
+
+    /* ==========================================================
+       ASIDE / INFO
+       ========================================================== */
+    .info__title {
+      margin: 0 0 18px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .steps { display: grid; gap: 16px; }
+
+    .steps li {
+      display: grid;
+      grid-template-columns: 26px 1fr;
+      gap: 12px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .steps strong { color: var(--text); font-weight: 600; display: block; }
+
+    .steps__num {
+      display: grid;
+      place-items: center;
+      width: 26px; height: 26px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    }
+
+    .info__divider {
+      height: 1px;
+      margin: 24px 0;
+      background: var(--border);
+    }
+
+    .info__meta {
+      display: grid;
+      gap: 8px;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+    .info__meta a { color: var(--accent-2); font-weight: 600; }
+    .info__meta a:hover { opacity: 0.8; }
+
+    /* ==========================================================
+       BOOKINGS LIST
+       ========================================================== */
+    .bookings { display: grid; gap: 14px; }
+
+    .booking {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 18px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      animation: pop 0.35s ease both;
+    }
+
+    @keyframes pop {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    .booking--past { opacity: 0.6; }
+
+    .booking__date {
+      display: grid;
+      place-items: center;
+      width: 58px;
+      padding: 8px 0;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--bg-alt);
+      line-height: 1.1;
+      flex-shrink: 0;
+    }
+
+    .booking__day { font-size: 1.15rem; font-weight: 800; }
+    .booking__month {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-2);
+    }
+
+    .booking__body { min-width: 0; }
+
+    .booking__title {
+      margin: 0 0 2px;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .booking__meta {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+      overflow-wrap: anywhere;
+    }
+
+    .booking__tag {
+      display: inline-block;
+      margin-left: 8px;
+      padding: 1px 8px;
+      border-radius: 999px;
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      vertical-align: 2px;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .empty {
+      padding: 40px 24px;
+      text-align: center;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .empty span { display: block; font-size: 1.6rem; margin-bottom: 8px; }
+
+    .list__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .counter {
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--accent-2);
+      background: rgba(34, 211, 238, 0.12);
+      border: 1px solid rgba(34, 211, 238, 0.32);
+    }
+
+    /* ==========================================================
+       FOOTER
+       ========================================================== */
+    .footer { border-top: 1px solid var(--border); padding: 30px 0; }
+
+    .footer__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer p { margin: 0; font-size: 0.85rem; color: var(--muted); }
+
+    .footer a { color: var(--accent-2); font-weight: 600; }
+
+    /* ==========================================================
+       RESPONSIVE
+       ========================================================== */
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 720px) {
+      .nav__burger { display: grid; }
+
+      .nav__links {
+        position: absolute;
+        top: 68px; left: 0; right: 0;
+        flex-direction: column;
+        gap: 0;
+        padding: 8px 24px 20px;
+        background: var(--bg);
+        border-bottom: 1px solid var(--border);
+        transform: translateY(-12px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.22s ease, transform 0.22s ease;
+      }
+      .nav__links.open {
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
+      }
+      .nav__links a { padding: 12px 0; border-bottom: 1px solid var(--border); }
+      .nav__links a::after { display: none; }
+
+      .hero { padding: 60px 0 40px; }
+      .section { padding: 48px 0; }
+      .panel { padding: 22px; }
+      .form__row { grid-template-columns: 1fr; }
+
+      .booking {
+        grid-template-columns: auto 1fr;
+        grid-template-areas:
+          "date body"
+          "action action";
+        align-items: start;
+      }
+      .booking__date { grid-area: date; }
+      .booking__body { grid-area: body; }
+      .booking .btn { grid-area: action; width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ================= NAV ================= -->
+  <header class="nav" id="nav">
+    <div class="container nav__inner">
+      <a href="index.html" class="nav__brand">
+        <img src="logo.png" alt="Online Booking System Logo" class="nav__logo" />
+        <span>Online Booking System</span>
+      </a>
+
+      <nav class="nav__links" id="navLinks" aria-label="Sections">
+        <a href="Appointments.html">Book</a>
+        <a href="Appointments.html">Appointments</a>
+        <a href="portfolio_sekang.html">Portfolio</a>
+      </nav>
+
+      <div class="nav__actions">
+        <button id="themeToggle" class="icon-btn" aria-label="Toggle colour theme">
+          <span class="theme-icon">🌙</span>
+        </button>
+        <button id="menuToggle" class="icon-btn nav__burger" aria-label="Open menu"
+                aria-expanded="false" aria-controls="navLinks">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ================= HERO ================= -->
+    <section class="hero">
+      <div class="hero__glow" aria-hidden="true"></div>
+      <div class="container hero__inner">
+        <p class="eyebrow">Project · Online Booking System</p>
+        <h1 class="hero__title">Schedule a service in seconds</h1>
+        <p class="hero__sub">
+          A Java-based web application for scheduling services — with form validation,
+          persistence and a clean, responsive interface. Pick a service, choose a slot,
+          and your appointment is saved.
+        </p>
+        <ul class="chips">
+          <li class="chip">Java</li>
+          <li class="chip">SQL</li>
+          <li class="chip">Web App</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ================= BOOKING FORM ================= -->
+    <section class="section" id="book">
+      <div class="container layout">
+
+        <div class="panel">
+          <h2 class="section__title">Book an appointment</h2>
+          <p class="section__note">All fields marked with an asterisk are required.</p>
+
+          <div id="flashBox" aria-live="polite"></div>
+
+          <form class="form" id="bookingForm" action="https://formspree.io/f/myeyergz" method="POST" novalidate>
+            <div class="form__row">
+              <div class="field">
+                <label for="service">Service *</label>
+                <select id="service" name="service" required>
+                  <option value="">Choose a service…</option>
+                  <option value="Website Design &amp; Build">Website Design &amp; Build</option>
+                  <option value="Java Development">Java Development</option>
+                  <option value="Front-End Development">Front-End Development</option>
+                  <option value="Code Review &amp; Debugging">Code Review &amp; Debugging</option>
+                  <option value="SEO &amp; Performance Audit">SEO &amp; Performance Audit</option>
+                  <option value="Maintenance &amp; Support">Maintenance &amp; Support</option>
+                </select>
+                <p class="field__error" id="err-service"></p>
+              </div>
+
+              <div class="field">
+                <label for="date">Date *</label>
+                <input type="date" id="date" name="date" required />
+                <p class="field__error" id="err-date"></p>
+              </div>
+            </div>
+
+            <div class="form__row">
+              <div class="field">
+                <label for="time">Time slot *</label>
+                <select id="time" name="time" required>
+                  <option value="">Choose a time…</option>
+                </select>
+                <p class="field__error" id="err-time"></p>
+              </div>
+
+              <div class="field">
+                <label for="name">Full name *</label>
+                <input type="text" id="name" name="name" placeholder="Ada Lovelace"
+                       autocomplete="name" maxlength="60" required />
+                <p class="field__error" id="err-name"></p>
+              </div>
+            </div>
+
+            <div class="form__row">
+              <div class="field">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" placeholder="ada@example.com"
+                       autocomplete="email" maxlength="80" required />
+                <p class="field__error" id="err-email"></p>
+              </div>
+
+              <div class="field">
+                <label for="phone">Phone (optional)</label>
+                <input type="tel" id="phone" name="phone" placeholder="+27 61 454 8884"
+                       autocomplete="tel" maxlength="24" />
+                <p class="field__error" id="err-phone"></p>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="notes">Notes (optional)</label>
+              <textarea id="notes" name="notes" rows="4" maxlength="400"
+                        placeholder="Tell me briefly what you need…"></textarea>
+              <p class="field__error" id="err-notes"></p>
+            </div>
+
+            <div class="form__actions">
+              <button type="submit" class="btn btn--primary" id="submitBtn">Confirm booking</button>
+              <p class="form__hint">You'll get a confirmation on screen straight away.</p>
+            </div>
+          </form>
+        </div>
+
+        <!-- ---- Side info ---- -->
+        <aside class="panel">
+          <h3 class="info__title">How it works</h3>
+          <ol class="steps">
+            <li>
+              <span class="steps__num" aria-hidden="true">1</span>
+              <span><strong>Pick a service</strong>Choose what you need help with.</span>
+            </li>
+            <li>
+              <span class="steps__num" aria-hidden="true">2</span>
+              <span><strong>Choose a slot</strong>Weekdays, 08:00 – 17:00, 30-minute sessions.</span>
+            </li>
+            <li>
+              <span class="steps__num" aria-hidden="true">3</span>
+              <span><strong>Confirm</strong>Your booking is saved and listed below.</span>
+            </li>
+          </ol>
+
+          <div class="info__divider" aria-hidden="true"></div>
+
+          <h3 class="info__title">Under the hood</h3>
+          <ul class="chips">
+            <li class="chip">Java</li>
+            <li class="chip">SQL</li>
+            <li class="chip">Validation</li>
+            <li class="chip">Persistence</li>
+            <li class="chip">Responsive</li>
+          </ul>
+
+          <div class="info__divider" aria-hidden="true"></div>
+
+          <div class="info__meta">
+            <span>✉️ <a href="mailto:sekang.segotso@moov.life">sekang.segotso@moov.life</a></span>
+            <span>☎ <a href="tel:+27614548884">+27 61 454 8884</a></span>
+          </div>
+        </aside>
+
+      </div>
+    </section>
+
+    <!-- ================= APPOINTMENTS ================= -->
+    <section class="section section--alt" id="appointments">
+      <div class="container">
+        <div class="list__head">
+          <div>
+            <h2 class="section__title">Your appointments</h2>
+            <p class="section__note" style="margin-bottom:0">
+              Saved in this browser. Cancel any slot you no longer need.
+            </p>
+          </div>
+          <span class="counter" id="counter">0 booked</span>
+        </div>
+
+        <ul class="bookings" id="bookings"></ul>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p>© 2026 Sekang Segotso. Online Booking System — Java, SQL &amp; responsive web.</p>
+      <p><a href="index.html">← Back to portfolio</a></p>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      "use strict";
+
+      /* ======================================================
+         THEME TOGGLE
+         ====================================================== */
+      const root = document.documentElement;
+      const toggle = document.getElementById("themeToggle");
+      const themeIcon = toggle.querySelector(".theme-icon");
+
+      function paintIcon() {
+        themeIcon.textContent = root.getAttribute("data-theme") === "light" ? "☀️" : "🌙";
+      }
+      paintIcon();
+
+      toggle.addEventListener("click", function () {
+        const next = root.getAttribute("data-theme") === "light" ? "dark" : "light";
+        root.setAttribute("data-theme", next);
+        try { localStorage.setItem("theme", next); } catch (e) {}
+        paintIcon();
+      });
+
+      /* ======================================================
+         MOBILE MENU
+         ====================================================== */
+      const burger = document.getElementById("menuToggle");
+      const links = document.getElementById("navLinks");
+
+      burger.addEventListener("click", function () {
+        const open = links.classList.toggle("open");
+        burger.setAttribute("aria-expanded", String(open));
+        burger.textContent = open ? "✕" : "☰";
+      });
+
+      links.querySelectorAll("a").forEach(function (a) {
+        a.addEventListener("click", function () {
+          links.classList.remove("open");
+          burger.textContent = "☰";
+          burger.setAttribute("aria-expanded", "false");
+        });
+      });
+
+      /* ======================================================
+         STICKY NAV BORDER
+         ====================================================== */
+      const nav = document.getElementById("nav");
+      function onScroll() {
+        nav.classList.toggle("nav--scrolled", window.scrollY > 12);
+      }
+      window.addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
+
+      /* ======================================================
+         ELEMENTS
+         ====================================================== */
+      const form       = document.getElementById("bookingForm");
+      const flashBox   = document.getElementById("flashBox");
+      const listEl     = document.getElementById("bookings");
+      const counterEl  = document.getElementById("counter");
+      const submitBtn  = document.getElementById("submitBtn");
+      const dateInput  = document.getElementById("date");
+      const timeSelect = document.getElementById("time");
+
+      const STORE_KEY = "ss-bookings";
+      const FORMSPREE_URL = "https://formspree.io/f/myeyergz";
+
+      /* ======================================================
+         PERSISTENCE (localStorage stands in for the SQL table)
+         ====================================================== */
+      function loadBookings() {
+        try {
+          const raw = localStorage.getItem(STORE_KEY);
+          const parsed = raw ? JSON.parse(raw) : [];
+          return Array.isArray(parsed) ? parsed : [];
+        } catch (e) {
+          return [];
+        }
+      }
+
+      function saveBookings(list) {
+        try { localStorage.setItem(STORE_KEY, JSON.stringify(list)); } catch (e) {}
+      }
+
+      /* ======================================================
+         HELPERS
+         ====================================================== */
+      function todayISO() {
+        const d = new Date();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        return d.getFullYear() + "-" + m + "-" + day;
+      }
+
+      function parseISODate(iso) {
+        return new Date(iso + "T00:00:00");
+      }
+
+      function prettyTime(t) {
+        const [h, m] = t.split(":").map(Number);
+        const suffix = h >= 12 ? "PM" : "AM";
+        const hour12 = h % 12 === 0 ? 12 : h % 12;
+        return hour12 + ":" + String(m).padStart(2, "0") + " " + suffix;
+      }
+
+      function prettyDate(iso) {
+        return parseISODate(iso).toLocaleDateString(undefined, {
+          weekday: "short", year: "numeric", month: "short", day: "numeric"
+        });
+      }
+
+      function makeId() {
+        if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+        return "bk-" + Date.now() + "-" + Math.random().toString(16).slice(2);
+      }
+
+      function flash(message, type) {
+        flashBox.innerHTML = "";
+        const box = document.createElement("div");
+        box.className = "flash flash--" + type;
+        box.textContent = message;
+        flashBox.appendChild(box);
+        window.setTimeout(function () { flashBox.innerHTML = ""; }, 6000);
+      }
+
+      function setError(field, message) {
+        const input = document.getElementById(field);
+        const slot = document.getElementById("err-" + field);
+        if (slot) slot.textContent = message || "";
+        if (input) {
+          if (message) input.setAttribute("aria-invalid", "true");
+          else input.removeAttribute("aria-invalid");
+        }
+      }
+
+      function clearErrors() {
+        ["service", "date", "time", "name", "email", "phone", "notes"]
+          .forEach(function (f) { setError(f, ""); });
+      }
+
+      /* ======================================================
+         TIME SLOTS (08:00 – 17:00, every 30 minutes)
+         ====================================================== */
+      (function buildSlots() {
+        for (let h = 8; h <= 17; h++) {
+          for (let m = 0; m < 60; m += 30) {
+            if (h === 17 && m > 0) continue;      // last slot 17:00
+            const value = String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
+            const opt = document.createElement("option");
+            opt.value = value;
+            opt.textContent = prettyTime(value);
+            timeSelect.appendChild(opt);
+          }
+        }
+      })();
+
+      /* Don't allow past dates */
+      dateInput.min = todayISO();
+
+      /* ======================================================
+         VALIDATION
+         ====================================================== */
+      const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+      const PHONE_RE = /^[+()\d\s-]{7,20}$/;
+
+      function validate(data, existing) {
+        const errors = {};
+
+        const name    = (data.name || "").trim();
+        const email   = (data.email || "").trim();
+        const phone   = (data.phone || "").trim();
+        const service = (data.service || "").trim();
+        const date    = (data.date || "").trim();
+        const time    = (data.time || "").trim();
+
+        if (name.length < 2) {
+          errors.name = "Please enter your full name (at least 2 characters).";
+        } else if (name.length > 60) {
+          errors.name = "That name is a bit long — 60 characters max.";
+        }
+
+        if (!EMAIL_RE.test(email)) {
+          errors.email = "Enter a valid email address, e.g. ada@example.com.";
+        }
+
+        if (phone && !PHONE_RE.test(phone)) {
+          errors.phone = "Enter a valid phone number (digits, spaces, +, -).";
+        }
+
+        if (!service) {
+          errors.service = "Please choose a service.";
+        }
+
+        if (!date) {
+          errors.date = "Please pick a date.";
+        } else {
+          const chosen = parseISODate(date);
+          if (isNaN(chosen.getTime())) {
+            errors.date = "That date isn't valid.";
+          } else {
+            const today = parseISODate(todayISO());
+            if (chosen < today) errors.date = "The date can't be in the past.";
+          }
+        }
+
+        if (!time) {
+          errors.time = "Please choose a time slot.";
+        }
+
+        /* Double-booking guard */
+        if (date && time && !errors.date && !errors.time) {
+          const clash = existing.some(function (b) {
+            return b.date === date && b.time === time;
+          });
+          if (clash) errors.time = "That slot is already taken — pick another.";
+        }
+
+        return errors;
+      }
+
+      /* ======================================================
+         RENDER APPOINTMENTS
+         ====================================================== */
+      function render() {
+        const list = loadBookings().sort(function (a, b) {
+          return (a.date + a.time).localeCompare(b.date + b.time);
+        });
+
+        listEl.innerHTML = "";
+
+        counterEl.textContent =
+          list.length + (list.length === 1 ? " booked" : " booked");
+
+        if (!list.length) {
+          const empty = document.createElement("li");
+          empty.className = "empty";
+          const icon = document.createElement("span");
+          icon.setAttribute("aria-hidden", "true");
+          icon.textContent = "🗓️";
+          empty.appendChild(icon);
+          empty.appendChild(document.createTextNode("No appointments yet — book your first slot above."));
+          listEl.appendChild(empty);
+          return;
+        }
+
+        const today = parseISODate(todayISO());
+
+        list.forEach(function (b) {
+          const d = parseISODate(b.date);
+          const isPast = d < today;
+
+          const li = document.createElement("li");
+          li.className = "booking" + (isPast ? " booking--past" : "");
+
+          /* Date badge */
+          const badge = document.createElement("div");
+          badge.className = "booking__date";
+          const day = document.createElement("span");
+          day.className = "booking__day";
+          day.textContent = String(d.getDate()).padStart(2, "0");
+          const month = document.createElement("span");
+          month.className = "booking__month";
+          month.textContent = d.toLocaleDateString(undefined, { month: "short" });
+          badge.appendChild(day);
+          badge.appendChild(month);
+
+          /* Body */
+          const body = document.createElement("div");
+          body.className = "booking__body";
+
+          const title = document.createElement("h3");
+          title.className = "booking__title";
+          title.textContent = b.service;
+          if (isPast) {
+            const tag = document.createElement("span");
+            tag.className = "booking__tag";
+            tag.textContent = "Past";
+            title.appendChild(tag);
+          }
+
+          const meta1 = document.createElement("p");
+          meta1.className = "booking__meta";
+          meta1.textContent = prettyDate(b.date) + " · " + prettyTime(b.time) +
+                              " · " + b.name;
+
+          const meta2 = document.createElement("p");
+          meta2.className = "booking__meta";
+          meta2.textContent = b.email + (b.phone ? " · " + b.phone : "");
+
+          body.appendChild(title);
+          body.appendChild(meta1);
+          body.appendChild(meta2);
+
+          if (b.notes) {
+            const meta3 = document.createElement("p");
+            meta3.className = "booking__meta";
+            meta3.textContent = "“" + b.notes + "”";
+            body.appendChild(meta3);
+          }
+
+          /* Cancel */
+          const cancel = document.createElement("button");
+          cancel.type = "button";
+          cancel.className = "btn btn--danger btn--sm";
+          cancel.dataset.cancel = b.id;
+          cancel.textContent = "Cancel";
+
+          li.appendChild(badge);
+          li.appendChild(body);
+          li.appendChild(cancel);
+          listEl.appendChild(li);
+        });
+      }
+
+      /* ======================================================
+         SUBMIT (WITH FORMSPREE INTEGRATION)
+         ====================================================== */
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        clearErrors();
+
+        const data = {
+          service: form.service.value,
+          date:    form.date.value,
+          time:    form.time.value,
+          name:    form.name.value,
+          email:   form.email.value,
+          phone:   form.phone.value,
+          notes:   form.notes.value.trim()
+        };
+
+        const existing = loadBookings();
+        const errors = validate(data, existing);
+
+        if (Object.keys(errors).length) {
+          Object.keys(errors).forEach(function (key) { setError(key, errors[key]); });
+
+          const first = Object.keys(errors)[0];
+          const el = document.getElementById(first);
+          if (el) el.focus({ preventScroll: true });
+
+          flash("Please fix the highlighted fields and try again.", "error");
+          return;
+        }
+
+        // --- FORMSPREE SUBMISSION ---
+        submitBtn.disabled = true;
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = "Sending...";
+
+        try {
+          const formData = new FormData(form);
+          const response = await fetch(FORMSPREE_URL, {
+            method: "POST",
+            body: formData,
+            headers: {
+              "Accept": "application/json"
+            }
+          });
+
+          if (response.ok) {
+            // Success
+            const record = {
+              id: makeId(),
+              service: data.service,
+              date: data.date,
+              time: data.time,
+              name: data.name.trim(),
+              email: data.email.trim(),
+              phone: data.phone.trim(),
+              notes: data.notes,
+              created: new Date().toISOString()
+            };
+
+            existing.push(record);
+            saveBookings(existing);
+            render();
+
+            form.reset();
+            dateInput.min = todayISO();
+            clearErrors();
+
+            flash(
+              "Thanks, " + record.name + "! Your " + record.service +
+              " is booked for " + prettyDate(record.date) + " at " + prettyTime(record.time) + ".",
+              "success"
+            );
+
+            document.getElementById("appointments")
+              .scrollIntoView({ behavior: "smooth", block: "start" });
+          } else {
+            // Formspree returned an error
+            const json = await response.json();
+            let msg = "Something went wrong with the submission.";
+            if (json.errors && json.errors.length > 0) {
+              msg = json.errors.map(err => err.message).join(", ");
+            }
+            flash("Failed to submit: " + msg + " Please try again.", "error");
+          }
+        } catch (error) {
+          // Network error
+          flash("Network error. Please check your connection and try again.", "error");
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+        }
+      });
+
+      /* Live-clear an error once the visitor edits the field */
+      form.querySelectorAll("input, select, textarea").forEach(function (field) {
+        field.addEventListener("input", function () {
+          if (field.id) setError(field.id, "");
+        });
+        field.addEventListener("change", function () {
+          if (field.id) setError(field.id, "");
+        });
+      });
+
+      /* ======================================================
+         CANCEL A BOOKING (event delegation)
+         ====================================================== */
+      listEl.addEventListener("click", function (e) {
+        const btn = e.target.closest("[data-cancel]");
+        if (!btn) return;
+
+        const id = btn.dataset.cancel;
+        const list = loadBookings();
+        const target = list.find(function (b) { return b.id === id; });
+        if (!target) return;
+
+        const ok = window.confirm(
+          "Cancel your " + target.service + " on " +
+          prettyDate(target.date) + " at " + prettyTime(target.time) + "?"
+        );
+        if (!ok) return;
+
+        saveBookings(list.filter(function (b) { return b.id !== id; }));
+        render();
+        flash("Appointment cancelled.", "success");
+      });
+
+      /* ======================================================
+         BOOT
+         ====================================================== */
+      render();
+    })();
+  </script>
+</body>
+</html>

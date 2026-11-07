@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About — Sekang Segotso</title>
+  <meta name="description" content="About Sekang Segotso — website developer in South Africa building responsive, accessible sites with HTML, CSS, JavaScript and Java." />
+  <link rel="icon" href="logo.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <script>
+    /* Apply saved theme before first paint to avoid a flash */
+    (function () {
+      var t = localStorage.getItem("theme");
+      if (t) document.documentElement.setAttribute("data-theme", t);
+    })();
+  </script>
+
+  <style>
+    /* ==========================================================
+       THEME VARIABLES  (identical across all pages)
+       ========================================================== */
+    :root {
+      --bg: #0b0f19;
+      --bg-alt: #0e1424;
+      --surface: #121a2b;
+      --text: #e7ebf3;
+      --muted: #93a1b8;
+      --accent: #6d7cff;
+      --accent-2: #22d3ee;
+      --border: rgba(255, 255, 255, 0.08);
+      --shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.7);
+      --radius: 16px;
+      --max: 1080px;
+    }
+
+    [data-theme="light"] {
+      --bg: #f7f8fc;
+      --bg-alt: #eef1f8;
+      --surface: #ffffff;
+      --text: #131a2b;
+      --muted: #5b6880;
+      --accent: #4f5bff;
+      --accent-2: #0891b2;
+      --border: rgba(15, 23, 42, 0.1);
+      --shadow: 0 20px 40px -24px rgba(15, 23, 42, 0.25);
+    }
+
+    /* ==========================================================
+       BASE / RESET
+       ========================================================== */
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 90px;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    ul, ol { list-style: none; margin: 0; padding: 0; }
+
+    .container {
+      width: 100%;
+      max-width: var(--max);
+      margin-inline: auto;
+      padding-inline: 24px;
+    }
+
+    .muted { color: var(--muted); }
+    .center { text-align: center; }
+
+    /* ==========================================================
+       NAV
+       ========================================================== */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      background: rgba(11, 15, 25, 0.78);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.25s ease, background 0.3s ease;
+    }
+
+    [data-theme="light"] .nav {
+      background: rgba(247, 248, 252, 0.8);
+    }
+
+    .nav--scrolled { border-bottom-color: var(--border); }
+
+    .nav__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 68px;
+      gap: 24px;
+    }
+
+    .nav__logo {
+      display: block;
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      transition: transform 0.2s ease;
+      flex-shrink: 0;
+    }
+    .nav__logo:hover { transform: scale(1.05); }
+    .nav__logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .nav__links { display: flex; gap: 26px; }
+
+    .nav__links a {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--muted);
+      transition: color 0.2s ease;
+      position: relative;
+    }
+    .nav__links a:hover,
+    .nav__links a.active { color: var(--text); }
+
+    .nav__links a::after {
+      content: "";
+      position: absolute;
+      left: 0; bottom: -6px;
+      width: 0; height: 2px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width 0.25s ease;
+    }
+    .nav__links a:hover::after,
+    .nav__links a.active::after { width: 100%; }
+
+    .nav__actions { display: flex; align-items: center; gap: 8px; }
+
+    .icon-btn {
+      display: grid;
+      place-items: center;
+      width: 38px; height: 38px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: transparent;
+      color: var(--text);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+    .icon-btn:hover { background: var(--surface); transform: translateY(-1px); }
+    .nav__burger { display: none; }
+
+    /* ==========================================================
+       PAGE HEADER
+       ========================================================== */
+    .page-head {
+      position: relative;
+      padding: 96px 0 40px;
+      overflow: hidden;
+    }
+
+    .page-head::before {
+      content: "";
+      position: absolute;
+      top: -220px; left: 50%;
+      transform: translateX(-50%);
+      width: 780px; height: 780px;
+      background: radial-gradient(circle, rgba(109, 124, 255, 0.28) 0%, transparent 62%);
+      filter: blur(30px);
+      pointer-events: none;
+    }
+
+    .page-head__inner { position: relative; max-width: 760px; }
+
+    .page-head__eyebrow {
+      margin: 0 0 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent-2);
+    }
+
+    .page-head__title {
+      margin: 0 0 14px;
+      font-size: clamp(2.1rem, 5.5vw, 3.4rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      background: linear-gradient(120deg, var(--text) 30%, var(--accent) 70%, var(--accent-2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .page-head__lead {
+      max-width: 58ch;
+      margin: 0;
+      font-size: 1.08rem;
+      color: var(--muted);
+    }
+
+    /* ==========================================================
+       BUTTONS
+       ========================================================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 22px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      font-size: 0.95rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+    .btn:hover { transform: translateY(-2px); }
+
+    .btn--primary {
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 12px 26px -12px var(--accent);
+    }
+    .btn--primary:hover { box-shadow: 0 18px 34px -14px var(--accent); }
+
+    .btn--ghost {
+      border-color: var(--border);
+      background: var(--surface);
+      color: var(--text);
+    }
+    .btn--ghost:hover { border-color: var(--accent); }
+
+    .btn--sm { padding: 9px 16px; font-size: 0.85rem; }
+
+    /* ==========================================================
+       SECTIONS
+       ========================================================== */
+    .section { padding: 72px 0; }
+    .section--tight { padding: 40px 0 72px; }
+    .section--alt { background: var(--bg-alt); }
+
+    .section__label {
+      margin: 0 0 8px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent-2);
+    }
+
+    .section__title {
+      margin: 0 0 36px;
+      font-size: clamp(1.7rem, 4vw, 2.3rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    /* ==========================================================
+       BIO — two-column intro
+       ========================================================== */
+    .bio {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 56px;
+      align-items: start;
+    }
+
+    .bio__prose p {
+      margin: 0 0 18px;
+      font-size: 1.02rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .bio__prose p:first-child {
+      font-size: 1.12rem;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .bio__prose p:last-of-type { margin-bottom: 26px; }
+
+    .bio__prose strong { color: var(--text); font-weight: 600; }
+
+    .bio__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .bio__card {
+      padding: 28px 24px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 92px;
+    }
+
+    .bio__avatar {
+      width: 88px;
+      height: 88px;
+      margin: 0 auto 16px;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.5);
+    }
+    .bio__avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .bio__card h3 {
+      margin: 0 0 4px;
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .bio__card .bio__role {
+      margin: 0 0 20px;
+      text-align: center;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .fact-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 11px 0;
+      border-bottom: 1px dashed var(--border);
+      font-size: 0.9rem;
+    }
+    .fact-list li:last-child { border-bottom: 0; padding-bottom: 0; }
+    .fact-list li:first-child { padding-top: 0; }
+
+    .fact-list .fact-key {
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .fact-list .fact-val {
+      color: var(--text);
+      font-weight: 600;
+      text-align: right;
+    }
+
+    /* ==========================================================
+       HOW I WORK — principle cards
+       ========================================================== */
+    .principles {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .principle {
+      padding: 28px 26px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      transition: transform 0.22s ease, border-color 0.22s ease;
+      position: relative;
+    }
+
+    .principle:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+    }
+
+    .principle__num {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      color: var(--accent-2);
+      margin-bottom: 12px;
+    }
+
+    .principle h3 {
+      margin: 0 0 10px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .principle p {
+      margin: 0;
+      font-size: 0.92rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ==========================================================
+       LOOKING FOR — clear ask
+       ========================================================== */
+    .looking-for {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    .looking-for__intro p {
+      margin: 0 0 18px;
+      font-size: 1rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .looking-for__intro p:first-child {
+      color: var(--text);
+      font-weight: 500;
+      font-size: 1.05rem;
+    }
+
+    .looking-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .looking-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px 18px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .looking-item:hover {
+      border-color: var(--accent);
+      transform: translateX(2px);
+    }
+
+    .looking-item__icon {
+      flex: none;
+      display: grid;
+      place-items: center;
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: rgba(109, 124, 255, 0.14);
+      border: 1px solid rgba(109, 124, 255, 0.3);
+      color: var(--accent-2);
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .looking-item__text h4 {
+      margin: 0 0 2px;
+      font-size: 0.94rem;
+      font-weight: 600;
+    }
+
+    .looking-item__text p {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ==========================================================
+       CURRENTLY — what I'm studying / using right now
+       ========================================================== */
+    .currently {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .current-card {
+      padding: 26px 24px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .current-card__label {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-2);
+      background: rgba(34, 211, 238, 0.1);
+      border: 1px solid rgba(34, 211, 238, 0.28);
+    }
+
+    .current-card h3 {
+      margin: 0 0 6px;
+      font-size: 1.08rem;
+      font-weight: 700;
+    }
+
+    .current-card p {
+      margin: 0 0 16px;
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .chip {
+      padding: 4px 11px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text);
+      background: rgba(109, 124, 255, 0.14);
+      border: 1px solid rgba(109, 124, 255, 0.3);
+    }
+
+    /* ==========================================================
+       CERTIFICATIONS — verified credentials
+       ========================================================== */
+    .certifications {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    .cert-card {
+      position: relative;
+      padding: 30px 28px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      transition: transform 0.22s ease, border-color 0.22s ease;
+    }
+
+    .cert-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+    }
+
+    .cert-card__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 14px;
+      padding: 4px 11px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-2);
+      background: rgba(34, 211, 238, 0.1);
+      border: 1px solid rgba(34, 211, 238, 0.28);
+    }
+
+    .cert-card__badge::before {
+      content: "✓";
+      display: inline-grid;
+      place-items: center;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      font-size: 0.6rem;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    }
+
+    .cert-card h3 {
+      margin: 0 0 4px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1.3;
+    }
+
+    .cert-card__issuer {
+      margin: 0 0 20px;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .cert-card .fact-list li { font-size: 0.88rem; }
+
+    .cert-card .fact-val--grade {
+      color: var(--accent-2);
+      font-weight: 700;
+    }
+
+    /* ==========================================================
+       CTA BAND
+       ========================================================== */
+    .cta-band {
+      position: relative;
+      padding: 56px 40px;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .cta-band::before {
+      content: "";
+      position: absolute;
+      inset: -60% -20% auto -20%;
+      height: 320px;
+      background: radial-gradient(50% 60% at 50% 50%,
+                  color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-band > * { position: relative; }
+
+    .cta-band h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.5rem, 4vw, 2.1rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .cta-band p {
+      margin: 0 auto 26px;
+      max-width: 52ch;
+      color: var(--muted);
+    }
+
+    .cta-band .btn { margin-inline: 6px; }
+
+    @media (max-width: 520px) {
+      .cta-band { padding: 40px 22px; }
+      .cta-band .btn { width: 100%; margin-inline: 0; margin-bottom: 10px; }
+    }
+
+    /* ==========================================================
+       FOOTER
+       ========================================================== */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 30px 0;
+    }
+
+    .footer__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer p { margin: 0; font-size: 0.85rem; color: var(--muted); }
+
+    .socials { display: flex; gap: 10px; }
+
+    .socials a {
+      display: grid;
+      place-items: center;
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: var(--muted);
+      transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    }
+    .socials a:hover {
+      color: var(--text);
+      border-color: var(--accent);
+      transform: translateY(-3px);
+    }
+
+    /* ==========================================================
+       REVEAL
+       ========================================================== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ==========================================================
+       RESPONSIVE
+       ========================================================== */
+    @media (max-width: 900px) {
+      .bio {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+      .bio__card { position: static; }
+      .looking-for,
+      .currently {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .nav__burger { display: grid; }
+      .nav__links {
+        position: absolute;
+        top: 68px; left: 0; right: 0;
+        flex-direction: column;
+        gap: 0;
+        padding: 8px 24px 20px;
+        background: var(--bg);
+        border-bottom: 1px solid var(--border);
+        transform: translateY(-12px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.22s ease, transform 0.22s ease;
+      }
+      .nav__links.open {
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
+      }
+      .nav__links a { padding: 12px 0; border-bottom: 1px solid var(--border); }
+      .nav__links a::after { display: none; }
+
+      .page-head { padding: 72px 0 28px; }
+      .section { padding: 56px 0; }
+      .section--tight { padding: 28px 0 56px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        transition-duration: 0.001ms !important;
+      }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ================= NAV ================= -->
+  <header class="nav" id="nav">
+    <div class="container nav__inner">
+      <a href="index.html" class="nav__logo" aria-label="Sekang Segotso Designs — home">
+        <img src="Logo.png" alt="Sekang Segotso Designs logo" />
+      </a>
+
+      <nav class="nav__links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="About.html" class="active" aria-current="page">About</a>
+        <a href="skills.html">Skills</a>
+        <a href="Projects.html">Projects</a>
+        <a href="experience.html">Experience</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+
+      <div class="nav__actions">
+        <button id="themeToggle" class="icon-btn" aria-label="Toggle colour theme">
+          <span class="theme-icon">🌙</span>
+        </button>
+        <button id="menuToggle" class="icon-btn nav__burger" aria-label="Open menu"
+                aria-expanded="false" aria-controls="navLinks">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ================= PAGE HEADER ================= -->
+    <section class="page-head">
+      <div class="container">
+        <div class="page-head__inner reveal">
+          <p class="page-head__eyebrow">About</p>
+          <h1 class="page-head__title">The developer behind the code.</h1>
+          <p class="page-head__lead">
+            I'm Sekang — a website developer building responsive, user-friendly
+            sites with HTML, CSS, JavaScript and Java. Here's a little more
+            about how I work and what I'm looking for.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= BIO ================= -->
+    <section class="section section--tight">
+      <div class="container">
+        <div class="bio">
+          <div class="bio__prose reveal">
+            <p>
+              I'm a website developer based in South Africa with a strong focus on
+              clean, maintainable code and interfaces that just work — on every
+              screen, in every browser.
+            </p>
+            <p>
+              My toolkit centres on <strong>HTML5, CSS3, JavaScript and Java</strong>,
+              with SQL for anything that needs a database behind it. I lean on
+              Bootstrap and Tailwind for fast starts, but I'm comfortable working
+              without them too — writing the CSS by hand when the design calls for
+              it, and keeping the three layers (structure, presentation, behaviour)
+              cleanly separated.
+            </p>
+            <p>
+              Most of what I do is <strong>responsive web design and front-end
+              development</strong>: taking a design or an idea and turning it into
+              a working page that looks right at 320&nbsp;px as well as 1920&nbsp;px,
+              loads quickly, and handles the messy edge cases — long words, missing
+              images, slow connections — without falling apart.
+            </p>
+            <p>
+              I care about the boring details too: alt text on images, keyboard
+              navigation, sensible focus states, meaningful page titles. They're
+              the difference between a site that ships and a site that actually
+              works for the people using it.
+            </p>
+
+            <div class="bio__actions">
+              <a href="Sekang_Segotso_Web_Developer_CV.pdf" class="btn btn--primary" download>
+                Download CV
+              </a>
+              <a href="contact.html" class="btn btn--ghost">Get in touch</a>
+            </div>
+          </div>
+
+          <aside class="bio__card reveal" aria-label="Quick facts">
+            <div class="bio__avatar">
+              <img src="sekang.webp" alt="Sekang Segotso Designs" />
+            </div>
+            <h3>Sekang Segotso</h3>
+            <p class="bio__role">Website Developer · South Africa</p>
+
+            <ul class="fact-list">
+              <li><span class="fact-key">Role</span><span class="fact-val">Website Developer</span></li>
+              <li><span class="fact-key">Focus</span><span class="fact-val">Front-end &amp; Java</span></li>
+              <li><span class="fact-key">Stack</span><span class="fact-val">HTML · CSS · JS · Java</span></li>
+              <li><span class="fact-key">Location</span><span class="fact-val">South Africa (UTC+2)</span></li>
+              <li><span class="fact-key">Status</span><span class="fact-val">Open to work</span></li>
+            </ul>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= HOW I WORK ================= -->
+    <section class="section section--alt">
+      <div class="container">
+        <p class="section__label">01 — Principles</p>
+        <h2 class="section__title">How I work</h2>
+
+        <div class="principles">
+          <div class="principle reveal">
+            <div class="principle__num">01</div>
+            <h3>Structure, style, behaviour</h3>
+            <p>
+              Semantic HTML for meaning, CSS for presentation, JavaScript for
+              interaction. Keeping the three layers separate means pages stay
+              easy to read, maintain and extend.
+            </p>
+          </div>
+
+          <div class="principle reveal">
+            <div class="principle__num">02</div>
+            <h3>Responsive by default</h3>
+            <p>
+              Fluid layouts first, breakpoints only where the content actually
+              needs them. Tested at 320&nbsp;px upward so nothing is clipped and
+              nothing forces horizontal scrolling.
+            </p>
+          </div>
+
+          <div class="principle reveal">
+            <div class="principle__num">03</div>
+            <h3>Fast &amp; findable</h3>
+            <p>
+              Speed and on-page SEO built in from the start — semantic markup,
+              optimised assets, sensible heading order — not bolted on after launch.
+            </p>
+          </div>
+
+          <div class="principle reveal">
+            <div class="principle__num">04</div>
+            <h3>Tested across browsers</h3>
+            <p>
+              Debugging and testing across browsers and platforms, so what ships
+              actually works everywhere — not just in the browser I happened to
+              build it in.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= WHAT I'M LOOKING FOR ================= -->
+    <section class="section">
+      <div class="container">
+        <p class="section__label">02 — Availability</p>
+        <h2 class="section__title">What I'm looking for</h2>
+
+        <div class="looking-for">
+          <div class="looking-for__intro reveal">
+            <p>
+              I'm currently open to junior and mid-level front-end roles, as well
+              as small, well-scoped freelance builds.
+            </p>
+            <p>
+              I'm equally at home joining an existing team and picking up an
+              established design system, or building a product interface from a
+              blank page. What matters to me is that the work is real, the
+              standards are high, and there's room to keep learning.
+            </p>
+            <p style="margin-bottom:0;">
+              The fastest way to reach me is by <a href="contact.html"
+              style="color:var(--accent-2); font-weight:600;">email via the contact
+              page</a> — I reply within one working day.
+            </p>
+          </div>
+
+          <div class="looking-list">
+            <div class="looking-item reveal">
+              <div class="looking-item__icon" aria-hidden="true">◂</div>
+              <div class="looking-item__text">
+                <h4>Front-end roles</h4>
+                <p>Junior to mid-level, where I can own markup, styling and interaction on real pages.</p>
+              </div>
+            </div>
+
+            <div class="looking-item reveal">
+              <div class="looking-item__icon" aria-hidden="true">✎</div>
+              <div class="looking-item__text">
+                <h4>Freelance website builds</h4>
+                <p>Landing pages, portfolio sites, small business sites — scoped and delivered end-to-end.</p>
+              </div>
+            </div>
+
+            <div class="looking-item reveal">
+              <div class="looking-item__icon" aria-hidden="true">↻</div>
+              <div class="looking-item__text">
+                <h4>Responsive refactors</h4>
+                <p>Taking a site that breaks on mobile and making it work properly at 320&nbsp;px upward.</p>
+              </div>
+            </div>
+
+            <div class="looking-item reveal">
+              <div class="looking-item__icon" aria-hidden="true">&lt;/&gt;</div>
+              <div class="looking-item__text">
+                <h4>Java-based web apps</h4>
+                <p>Smaller systems — booking, scheduling, internal tools — with SQL persistence.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CURRENTLY ================= -->
+    <section class="section section--alt">
+      <div class="container">
+        <p class="section__label">03 — Currently</p>
+        <h2 class="section__title">What I'm working on right now</h2>
+
+        <div class="currently">
+          <div class="current-card reveal">
+            <span class="current-card__label">Studying</span>
+            <h3>Certificate in Web Development</h3>
+            <p>
+              Fundamentals of Web Development — Illinois Tech. Completed 2023
+              to 2024, covering modern web fundamentals end-to-end.
+            </p>
+            <div class="chips">
+              <span class="chip">In progress</span>
+              <span class="chip">Illinois Tech</span>
+            </div>
+          </div>
+
+          <div class="current-card reveal">
+            <span class="current-card__label">Building</span>
+            <h3>Freelance &amp; internship work</h3>
+            <p>
+              Freelance website builds alongside an ongoing part-time front-end
+              internship focused on e-commerce platforms and API integration.
+            </p>
+            <div class="chips">
+              <span class="chip">HTML</span>
+              <span class="chip">CSS</span>
+              <span class="chip">JavaScript</span>
+              <span class="chip">Java</span>
+              <span class="chip">Python</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CERTIFICATIONS ================= -->
+    <section class="section">
+      <div class="container">
+        <p class="section__label">04 — Certifications</p>
+        <h2 class="section__title">Verified credentials</h2>
+
+        <div class="certifications">
+          <div class="cert-card reveal">
+            <span class="cert-card__badge">Coursera Verified</span>
+            <h3>Create Your First Python Program From UST</h3>
+            <p class="cert-card__issuer">Issued by UST · Certified by Coursera</p>
+
+            <ul class="fact-list">
+              <li><span class="fact-key">Completed by</span><span class="fact-val">Sekang Segotso</span></li>
+              <li><span class="fact-key">Date</span><span class="fact-val">November 2, 2026</span></li>
+              <li><span class="fact-key">Duration</span><span class="fact-val">2 hours (approx.)</span></li>
+              <li><span class="fact-key">Grade achieved</span><span class="fact-val fact-val--grade">100%</span></li>
+              <li><span class="fact-key">Status</span><span class="fact-val">Verified ✓</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CTA ================= -->
+    <section class="section section--tight">
+      <div class="container">
+        <div class="cta-band reveal">
+          <h2>Let's build something together.</h2>
+          <p>
+            Whether you've got a project in mind, a role to fill, or just a
+            question — my inbox is open and I reply within one working day.
+          </p>
+          <a href="contact.html" class="btn btn--primary">Get in touch</a>
+          <a href="Sekang_Segotso_Web_Developer_CV.pdf" class="btn btn--ghost" download>Download CV</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p>© 2026 Sekang Segotso. Built with plain HTML, CSS &amp; JavaScript.</p>
+      <ul class="socials">
+        <li><a href="https://github.com/sekangsegotso" target="_blank" rel="noopener" aria-label="GitHub">gh</a></li>
+        <li><a href="https://linkedin.com/in/sekangsegotso" target="_blank" rel="noopener" aria-label="LinkedIn">in</a></li>
+        <li><a href="mailto:sekang.segotso@moov.life" aria-label="Email">@</a></li>
+        <li><a href="tel:+27614548884" aria-label="Phone">☎</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      "use strict";
+
+      /* ---------- Theme toggle (persisted) ---------- */
+      const root = document.documentElement;
+      const toggle = document.getElementById("themeToggle");
+      const icon = toggle.querySelector(".theme-icon");
+
+      function paintIcon() {
+        icon.textContent = root.getAttribute("data-theme") === "light" ? "☀️" : "🌙";
+      }
+      paintIcon();
+
+      toggle.addEventListener("click", function () {
+        const next = root.getAttribute("data-theme") === "light" ? "dark" : "light";
+        root.setAttribute("data-theme", next);
+        localStorage.setItem("theme", next);
+        paintIcon();
+      });
+
+      /* ---------- Mobile menu ---------- */
+      const burger = document.getElementById("menuToggle");
+      const links = document.getElementById("navLinks");
+
+      burger.addEventListener("click", function () {
+        const open = links.classList.toggle("open");
+        burger.setAttribute("aria-expanded", String(open));
+        burger.textContent = open ? "✕" : "☰";
+      });
+
+      links.querySelectorAll("a").forEach(function (a) {
+        a.addEventListener("click", function () {
+          links.classList.remove("open");
+          burger.textContent = "☰";
+          burger.setAttribute("aria-expanded", "false");
+        });
+      });
+
+      /* ---------- Sticky nav border on scroll ---------- */
+      const nav = document.getElementById("nav");
+      function onScroll() {
+        nav.classList.toggle("nav--scrolled", window.scrollY > 12);
+      }
+      window.addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
+
+      /* ---------- Scroll reveal ---------- */
+      const revealEls = document.querySelectorAll(".reveal");
+      if ("IntersectionObserver" in window) {
+        const io = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("visible");
+                io.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+        );
+        revealEls.forEach(function (el) { io.observe(el); });
+      } else {
+        revealEls.forEach(function (el) { el.classList.add("visible"); });
+      }
+    })();
+  </script>
+</body>
+</html>
